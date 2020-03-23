@@ -1,0 +1,22 @@
+version: "3"
+services:
+  service:
+    build: .
+    environment:
+      - DATABASE_URI=db
+    ports:
+      - "8080:8080"
+    links:
+      - db
+    volumes:
+      - ".:/go/src/github.com/deanobarnett/mood-tracker"
+  db:
+    image: postgres
+
+  test:
+    build: .
+    command: make docker.test
+    links:
+      - db
+    volumes:
+      - ".:/go/src/github.com/deanobarnett/mood-tracker"
