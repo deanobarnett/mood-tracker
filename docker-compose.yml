@@ -3,8 +3,7 @@ services:
   service:
     build: .
     environment:
-      DB_DRIVER: "postgres"
-      DB_DSN: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
     ports:
       - "8080:8080"
     links:

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"os"
+
 	"github.com/deanobarnett/mood-tracker/entry"
 	"github.com/deanobarnett/mood-tracker/http"
 
@@ -13,7 +15,8 @@ func main() {
 	e := echo.New()
 	e.Server.Addr = ":8080"
 
-	db, err := sqlx.Connect("postgres", "host=db user=postgres dbname=postgres password=postgres sslmode=disable")
+	dbURL := os.Getenv("DATABASE_URL")
+	db, err := sqlx.Connect("postgres", dbURL)
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
