@@ -1,6 +1,7 @@
 FROM golang:1.14
 
 RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
+RUN go get -tags nomysql github.com/steinbacher/goose/cmd/goose
 
 RUN mkdir -p /go/src/github.com/deanobarnett/mood-tracker
 WORKDIR /go/src/github.com/deanobarnett/mood-tracker

@@ -3,16 +3,24 @@ services:
   service:
     build: .
     environment:
-      - DATABASE_URI=db
+      DB_DRIVER: "postgres"
+      DB_DSN: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
     ports:
       - "8080:8080"
     links:
+      - db
+    depends_on:
       - db
     volumes:
       - ".:/go/src/github.com/deanobarnett/mood-tracker"
   db:
     image: postgres
-
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   test:
     build: .
     command: make docker.test
@@ -20,3 +28,5 @@ services:
       - db
     volumes:
       - ".:/go/src/github.com/deanobarnett/mood-tracker"
+volumes:
+  pgdata:

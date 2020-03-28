@@ -1,23 +1,26 @@
 package main
 
 import (
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"github.com/deanobarnett/mood-tracker/entry"
+	"github.com/deanobarnett/mood-tracker/http"
 
-	"github.com/deanobarnett/mood-tracker/handler"
+	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo"
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	e := echo.New()
-	e.Pre(middleware.RemoveTrailingSlash())
+	e.Server.Addr = ":8080"
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.RequestID())
-	e.Use(middleware.Secure())
+	db, err := sqlx.Connect("postgres", "host=db user=postgres dbname=postgres password=postgres sslmode=disable")
+	if err != nil {
+		e.Logger.Fatal(err)
+	}
+	defer db.Close()
 
-	e.GET("/entries", handler.GetEntries)
-	e.POST("/entries", handler.CreateEntry)
+	entryService := &entry.Service{DB: db}
+	server := &http.Server{Router: e, EntryService: entryService}
 
-	e.Logger.Fatal(e.Start(":8080"))
+	server.Run()
 }
