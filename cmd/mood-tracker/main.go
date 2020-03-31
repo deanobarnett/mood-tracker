@@ -7,7 +7,7 @@ import (
 	"github.com/deanobarnett/mood-tracker/http"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/labstack/echo"
+	"github.com/labstack/echo/v4"
 	_ "github.com/lib/pq"
 )
 

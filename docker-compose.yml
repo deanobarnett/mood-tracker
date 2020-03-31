@@ -4,6 +4,7 @@ services:
     build: .
     environment:
       DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
+      DEBUG: "true"
     ports:
       - "8080:8080"
     links:
