@@ -17,7 +17,7 @@ func main() {
 	e := echo.New()
 	e.Server.Addr = ":8080"
 
-	dbURL := os.Getenv("DATABASE_URL")
+	dbURL := os.Getenv("DB_DSN")
 	db, err := sqlx.Connect("postgres", dbURL)
 	if err != nil {
 		e.Logger.Fatal(err)

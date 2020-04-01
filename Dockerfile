@@ -1,5 +1,10 @@
 FROM golang:1.14
 
+# Install tools to make the container useful
+RUN apt-get update
+RUN apt-get install --yes vim
+
+# Install some development dependancies
 RUN curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.24.0
 RUN go get -tags nomysql github.com/steinbacher/goose/cmd/goose
 
