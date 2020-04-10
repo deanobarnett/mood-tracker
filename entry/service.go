@@ -13,8 +13,8 @@ type Service struct {
 }
 
 const createSQL = `
-INSERT INTO entries (uuid, date, mood, sleep, stress, updated_at, created_at)
-	VALUES (:uuid, :date, :mood, :sleep, :stress, :updated_at, :created_at)
+INSERT INTO entries (uuid, date, mood, sleep, stress, notes, updated_at, created_at)
+	VALUES (:uuid, :date, :mood, :sleep, :stress, :notes, :updated_at, :created_at)
 `
 
 func (es *Service) CreateEntry(entry *Model) (*Model, error) {
