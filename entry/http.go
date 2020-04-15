@@ -27,7 +27,12 @@ func (h *HTTPServer) getEntry(c echo.Context) error {
 }
 
 func (h *HTTPServer) listEntries(c echo.Context) error {
-	entries, err := h.Service.ListEntries()
+	perPageParam := c.QueryParam("per_page")
+	if perPageParam == "" {
+		perPageParam = "10"
+	}
+	perPage, _ := strconv.ParseInt(perPageParam, 10, 64)
+	entries, err := h.Service.ListEntries(perPage)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}

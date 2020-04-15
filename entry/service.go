@@ -30,9 +30,9 @@ func (es *Service) CreateEntry(entry *Model) (*Model, error) {
 	return es.getEntryByUUID(entry.UUID)
 }
 
-func (es *Service) ListEntries() (*[]Model, error) {
+func (es *Service) ListEntries(limit int64) (*[]Model, error) {
 	entries := &[]Model{}
-	err := es.DB.Select(entries, "SELECT * FROM entries ORDER BY date desc")
+	err := es.DB.Select(entries, `SELECT * FROM entries ORDER BY date desc LIMIT $1`, limit)
 	if err != nil {
 		return nil, fmt.Errorf("problem getting entries: %w", err)
 	}
