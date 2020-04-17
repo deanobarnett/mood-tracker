@@ -1,17 +1,25 @@
 # Mood Tracker
 
+API to track daily habits and mood.
+
+## Motivation
+
+This is mostly a learning exercise to build something I will use myself, as well as testing out various libraries, design patterns and other Go related things.
+
 ## To Do
-- Add user endpoints
-- Clone as a template for future Go APIs
-- Add habit endpoints
+- [ ] User/Auth endpoints
+- [ ] Build CLI interface to services
+- [ ] Clone as a template for future Go APIs
+- [ ] Endpoints for show current streak
+- [ ] Habit tracking endpoints
 
 ## App Setup
 
 ```
 main
   -| initialise data store
-  -| initialise user service
-  -| initialise entry service
+  -| initialise any other dependencies
+  -| initialise services
 server
   -| takes service
   -| handles http
