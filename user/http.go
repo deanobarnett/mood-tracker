@@ -50,7 +50,7 @@ func (h *HTTPServer) createSession(c echo.Context) error {
 	password := c.FormValue("password")
 	ctx := c.Request().Context()
 
-	user, err := h.Service.Validate(ctx, email, password)
+	user, err := h.Service.Login(ctx, email, password)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 	}

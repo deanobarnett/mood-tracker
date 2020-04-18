@@ -53,7 +53,7 @@ func (s *Service) Login(ctx context.Context, email string, password string) (*Mo
 	if err != nil {
 		return nil, fmt.Errorf("could not find user %s: %v", email, err)
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(token))
+	err = bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(password))
 	if err != nil {
 		return nil, fmt.Errorf("password does not match: %v", err)
 	}
@@ -64,7 +64,7 @@ func (s *Service) Validate(ctx context.Context, token string) error {
 	user := &Model{}
 	err := s.DB.Get(user, "SELECT 1 FROM users WHERE remember_token=$1", token)
 	if err != nil {
-		return nil, fmt.Errorf("could not find user token '%s': %v", token, err)
+		return fmt.Errorf("could not find user token '%s': %v", token, err)
 	}
 	return nil
 }
