@@ -12,6 +12,10 @@ type Service struct {
 	DB *sqlx.DB
 }
 
+func NewService(db *sqlx.DB) *Service {
+	return &Service{DB: db}
+}
+
 const createSQL = `
 INSERT INTO entries (uuid, date, mood, sleep, stress, notes, updated_at, created_at)
 	VALUES (:uuid, :date, :mood, :sleep, :stress, :notes, :updated_at, :created_at)

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/deanobarnett/mood-tracker/entry"
+	"github.com/deanobarnett/mood-tracker/user"
 	"github.com/tylerb/graceful"
 
 	"github.com/jmoiron/sqlx"
@@ -32,11 +33,15 @@ func main() {
 	e.Use(middleware.Secure())
 	e.Use(middleware.Gzip())
 
-	{
-		entryService := &entry.Service{DB: db}
-		entryServer := &entry.HTTPServer{Service: entryService}
-		entryServer.RouteTo(e)
-	}
+	// set up user service
+	userService := user.NewService(db)
+	userServer := user.NewHTTPServer(userService)
+	userServer.RouteTo(e, user.Authorize(userService))
+
+	// set up entry service
+	entryService := entry.NewService(db)
+	entryServer := entry.NewHTTPServer(entryService)
+	entryServer.RouteTo(e, user.Authorize(userService))
 
 	graceful.ListenAndServe(e.Server, 5*time.Second)
 }
