@@ -8,6 +8,7 @@ This is mostly a learning exercise to build something I will use myself, as well
 
 ## To Do
 - [ ] User/Auth endpoints
+- [ ] API level tests
 - [ ] Build CLI interface to services
 - [ ] Clone as a template for future Go APIs
 - [ ] Endpoints for show current streak

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"time"
 
@@ -14,14 +15,14 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func main() {
+func run() error {
 	e := echo.New()
 	e.Server.Addr = ":8080"
 
 	dbURL := os.Getenv("DB_DSN")
 	db, err := sqlx.Connect("postgres", dbURL)
 	if err != nil {
-		e.Logger.Fatal(err)
+		return err
 	}
 	defer db.Close()
 
@@ -43,5 +44,9 @@ func main() {
 	entryServer := entry.NewHTTPServer(entryService)
 	entryServer.RouteTo(e, user.Authorize(userService))
 
-	graceful.ListenAndServe(e.Server, 5*time.Second)
+	return graceful.ListenAndServe(e.Server, 5*time.Second)
+}
+
+func main() {
+	log.Fatal(run())
 }
