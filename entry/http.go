@@ -11,10 +11,16 @@ type HTTPServer struct {
 	Service *Service
 }
 
-func (h *HTTPServer) RouteTo(e *echo.Echo) {
-	e.GET("/entries/:id", h.getEntry)
-	e.GET("/entries", h.listEntries)
-	e.POST("/entries", h.createEntry)
+func NewHTTPServer(svc *Service) *HTTPServer {
+	return &HTTPServer{Service: svc}
+}
+
+func (h *HTTPServer) RouteTo(e *echo.Echo, auth echo.MiddlewareFunc) {
+	g := e.Group("/entries", auth)
+
+	g.GET("/:id", h.getEntry)
+	g.GET("", h.listEntries)
+	g.POST("", h.createEntry)
 }
 
 func (h *HTTPServer) getEntry(c echo.Context) error {
