@@ -37,10 +37,10 @@ start: ## Run the application locally in the background
 stop: ## Stop the running application
 	@docker-compose down
 
-db.migrate: ## Stop the running application
+db.migrate: ## Migrate the database
 	@docker-compose run --rm  service goose up
 
-db.recreate: ## Stop the running application
+db.recreate: ## Drop and re-create the database
 	@docker-compose down -v
 	@docker-compose up --build -d db
 	@sleep 3
