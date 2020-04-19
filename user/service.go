@@ -19,8 +19,8 @@ func NewService(db *sqlx.DB) *Service {
 }
 
 const createSQL = `
-INSERT INTO users (email, encrypted_password, remember_token, confirmation_token, updated_at, created_at)
-	VALUES (:email, :encrypted_password, :remember_token, :confirmation_token, :updated_at, :created_at)
+INSERT INTO users (email, encrypted_password, remember_token, updated_at, created_at)
+	VALUES (:email, :encrypted_password, :remember_token, :updated_at, :created_at)
 `
 
 func (s *Service) CreateUser(ctx context.Context, email, pass string) (*Model, error) {
@@ -44,6 +44,8 @@ func (s *Service) CreateUser(ctx context.Context, email, pass string) (*Model, e
 		return nil, fmt.Errorf("unable to create entry: %w", err)
 	}
 
+	// send email
+
 	return user, nil
 }
 
@@ -60,11 +62,42 @@ func (s *Service) Login(ctx context.Context, email string, password string) (*Mo
 	return user, nil
 }
 
+func (s *Service) ResetPassword(ctx context.Context, token string) error {
+	_, err := s.DB.Exec("UPDATE users SET confirmation_token=$1 WHERE remember_token=$2", uuid.New().String(), token)
+
+	if err != nil {
+		return fmt.Errorf("could not create new: %v", err)
+	}
+
+	// send email
+	return nil
+}
+
+func (s *Service) UpdatePassword(ctx context.Context, id, token, password string) error {
+	_, err := s.DB.Exec("UPDATE users SET password=$1, confirmation_token=NULL WHERE id=$2 AND confirmation_token=$3", password, id, token)
+	if err != nil {
+		return fmt.Errorf("new password not saved for user '%s': %v", id, err)
+	}
+	return nil
+}
+
 func (s *Service) Validate(ctx context.Context, token string) error {
 	user := &Model{}
 	err := s.DB.Get(user, "SELECT 1 FROM users WHERE remember_token=$1", token)
 	if err != nil {
 		return fmt.Errorf("could not find user token '%s': %v", token, err)
 	}
+	return nil
+}
+
+func (s *Service) SignOut(ctx context.Context, token string) error {
+	newToken := uuid.New().String()
+
+	_, err := s.DB.Exec("UPDATE users SET remember_token=$1 WHERE remember_token=$2", newToken, token)
+
+	if err != nil {
+		return fmt.Errorf("could not update users remember token: %v", err)
+	}
+
 	return nil
 }

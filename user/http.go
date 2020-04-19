@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -37,12 +36,29 @@ func (h *HTTPServer) createUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, user)
 }
 
+// reset password
 func (h *HTTPServer) createPassword(c echo.Context) error {
-	return fmt.Errorf("not implemented")
+	token := c.QueryParam("remember_token")
+	ctx := c.Request().Context()
+
+	err := h.Service.ResetPassword(ctx, token)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusCreated, nil)
 }
 
 func (h *HTTPServer) updatePassword(c echo.Context) error {
-	return fmt.Errorf("not implemented")
+	token := c.QueryParam("confirmation_token")
+	id := c.Param("id")
+	password := c.FormValue("password")
+	ctx := c.Request().Context()
+
+	err := h.Service.UpdatePassword(ctx, id, token, password)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (h *HTTPServer) createSession(c echo.Context) error {
@@ -57,6 +73,14 @@ func (h *HTTPServer) createSession(c echo.Context) error {
 	return c.JSON(http.StatusCreated, user)
 }
 
+// destroy the users current session
 func (h *HTTPServer) deleteSession(c echo.Context) error {
-	return fmt.Errorf("not implemented")
+	token := c.QueryParam("remember_token")
+
+	err := h.Service.SignOut(c.Request().Context(), token)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
+	}
+
+	return c.JSON(http.StatusOK, nil)
 }
