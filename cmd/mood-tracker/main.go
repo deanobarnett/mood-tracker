@@ -27,12 +27,13 @@ func run() error {
 	defer db.Close()
 
 	e.Pre(middleware.RemoveTrailingSlash())
-	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.Logger())
 	e.Use(middleware.CORS())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Secure())
 	e.Use(middleware.Gzip())
+	e.Use(middleware.CSRF())
 
 	// set up auth service
 	authService := auth.NewService(db)
