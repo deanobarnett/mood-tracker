@@ -10,6 +10,6 @@ WORKDIR /go/src/github.com/deanobarnett/mood-tracker
 COPY . .
 
 RUN go mod verify
-RUN go install -race ./cmd/...
+RUN GOFLAGS=-mod=vendor go install -race ./cmd/...
 
 CMD ["/go/bin/mood-tracker"]

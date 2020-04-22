@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
+	"github.com/deanobarnett/mood-tracker/auth"
 	"github.com/deanobarnett/mood-tracker/entry"
-	"github.com/deanobarnett/mood-tracker/user"
 	"github.com/tylerb/graceful"
 
 	"github.com/jmoiron/sqlx"
@@ -34,15 +34,15 @@ func run() error {
 	e.Use(middleware.Secure())
 	e.Use(middleware.Gzip())
 
-	// set up user service
-	userService := user.NewService(db)
-	userServer := user.NewHTTPServer(userService)
-	userServer.RouteTo(e, user.Authorize(userService))
+	// set up auth service
+	authService := auth.NewService(db)
+	authServer := auth.NewHTTPServer(authService)
+	authServer.RouteTo(e, auth.Authorize(authService))
 
 	// set up entry service
 	entryService := entry.NewService(db)
 	entryServer := entry.NewHTTPServer(entryService)
-	entryServer.RouteTo(e, user.Authorize(userService))
+	entryServer.RouteTo(e, auth.Authorize(authService))
 
 	return graceful.ListenAndServe(e.Server, 5*time.Second)
 }
