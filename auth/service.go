@@ -49,6 +49,15 @@ func (s *Service) CreateUser(ctx context.Context, email, pass string) (*Model, e
 	return user, nil
 }
 
+func (s *Service) GetUser(ctx context.Context, email string) (*Model, error) {
+	user := &Model{}
+	err := s.DB.Get(user, "SELECT * FROM users WHERE email=$1", email)
+	if err != nil {
+		return nil, fmt.Errorf("could not find user %s: %v", email, err)
+	}
+	return user, nil
+}
+
 func (s *Service) Login(ctx context.Context, email string, password string) (*Model, error) {
 	user := &Model{}
 	err := s.DB.Get(user, "SELECT * FROM users WHERE email=$1", email)

@@ -33,6 +33,8 @@ func (h *HTTPServer) createUser(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
+
+	c.Request().AddCookie(NewCookie(user.RememberToken))
 	return c.JSON(http.StatusCreated, user)
 }
 
@@ -70,6 +72,7 @@ func (h *HTTPServer) createSession(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 	}
+	c.Request().AddCookie(NewCookie(user.RememberToken))
 	return c.JSON(http.StatusCreated, user)
 }
 
@@ -82,5 +85,6 @@ func (h *HTTPServer) deleteSession(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "invalid credentials")
 	}
 
+	c.Request().AddCookie(ExpireCookie())
 	return c.JSON(http.StatusOK, nil)
 }

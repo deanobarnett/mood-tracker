@@ -10,13 +10,9 @@ import (
 func Authorize(s *Service) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			token := c.QueryParam("remember_token")
 
-			if token == "" {
-				token = parseHeader(c.Request())
-			}
+			err := s.Validate(c.Request().Context(), fetchToken(c))
 
-			err := s.Validate(c.Request().Context(), token)
 			if err != nil {
 				c.Logger().Warnf("unauthorized user access: %s", err.Error())
 				return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized user")
@@ -25,6 +21,29 @@ func Authorize(s *Service) echo.MiddlewareFunc {
 			return next(c)
 		}
 	}
+}
+
+func fetchToken(c echo.Context) string {
+	token := ""
+	// Precedence
+	// 1. Cookie
+	// 2. Query Param
+	// 3. Header
+	cookie, err := c.Cookie("remember_token")
+
+	if err == nil {
+		token = cookie.Value
+	}
+
+	if token == "" {
+		token = c.QueryParam("remember_token")
+	}
+
+	if token == "" {
+		token = parseHeader(c.Request())
+	}
+
+	return token
 }
 
 // Parse a header of Format "Bearer <token>"
