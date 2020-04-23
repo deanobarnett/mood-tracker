@@ -19,6 +19,7 @@ func run() error {
 	config := config.NewConfig()
 	e := echo.New()
 	e.Server.Addr = ":" + string(config.Port)
+	e.Server.ReadTimeout = 3 * time.Second
 
 	db, err := sqlx.Connect("postgres", config.DB)
 	if err != nil {

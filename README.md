@@ -7,7 +7,6 @@ API to track daily habits and mood.
 This is mostly a learning exercise to build something I will use myself, as well as testing out various libraries, design patterns and other Go related things.
 
 ## To Do
-- [ ] User/Auth endpoints
 - [ ] API level tests
 - [ ] Build CLI interface to services
 - [ ] Clone as a template for future Go APIs
